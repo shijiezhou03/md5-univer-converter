@@ -1,0 +1,196 @@
+/* style.css — MD5 转换页的自有样式（Univer 表格自身的样式在 vendor/ 中） */
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", Arial, sans-serif;
+  color: #1f2328;
+  background: #f6f8fa;
+}
+
+.page-header {
+  padding: 12px 16px 8px;
+  background: #ffffff;
+  border-bottom: 1px solid #d8dee4;
+}
+
+.title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.title-row h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.badge {
+  font-size: 12px;
+  color: #0969da;
+  background: #ddf4ff;
+  border: 1px solid #b6e3ff;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.sub {
+  margin: 6px 0 10px;
+  font-size: 13px;
+  color: #57606a;
+  line-height: 1.6;
+}
+
+.sub code {
+  background: #eff1f3;
+  border-radius: 4px;
+  padding: 0 4px;
+  font-family: Consolas, Menlo, monospace;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbar button,
+.toolbar .file-btn {
+  font-size: 13px;
+  line-height: 1.4;
+  padding: 5px 12px;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  background: #f6f8fa;
+  color: #1f2328;
+  cursor: pointer;
+}
+
+.toolbar button:hover,
+.toolbar .file-btn:hover {
+  background: #eaeef2;
+}
+
+.toolbar .sep {
+  width: 1px;
+  align-self: stretch;
+  background: #d8dee4;
+  margin: 0 2px;
+}
+
+.toolbar .opt {
+  font-size: 13px;
+  color: #424a53;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.toolbar select {
+  font-size: 13px;
+  padding: 4px 6px;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+#batch-box {
+  margin-top: 10px;
+}
+
+#batch-text {
+  width: 100%;
+  font-family: Consolas, Menlo, monospace;
+  font-size: 13px;
+  padding: 8px;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  resize: vertical;
+}
+
+.batch-actions { margin-top: 6px; }
+
+.batch-actions button {
+  font-size: 13px;
+  padding: 5px 14px;
+  border: 1px solid #0969da;
+  border-radius: 6px;
+  background: #0969da;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.status-row {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #57606a;
+  display: flex;
+  gap: 16px;
+}
+
+main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+#univer-app {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  background: #ffffff;
+}
+
+#fallback {
+  padding: 16px;
+}
+
+#fallback h2 { margin: 0 0 6px; font-size: 16px; }
+
+.fallback-msg { color: #b42318; font-size: 13px; margin: 0 0 10px; }
+
+.fallback-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.fallback-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: #424a53;
+}
+
+.fallback-grid textarea {
+  font-family: Consolas, Menlo, monospace;
+  font-size: 13px;
+  padding: 8px;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  resize: vertical;
+}
+
+.page-footer {
+  padding: 6px 16px;
+  font-size: 12px;
+  color: #6e7781;
+  background: #ffffff;
+  border-top: 1px solid #d8dee4;
+}
+
+@media (max-width: 720px) {
+  .fallback-grid { grid-template-columns: 1fr; }
+  .title-row h1 { font-size: 17px; }
+}
