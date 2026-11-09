@@ -63,12 +63,15 @@
 │   └── style.css               页面自有样式
 ├── js/
 │   ├── md5.js                  MD5 实现（UTF-8，RFC 1321）
+│   ├── univer-presets-loader.js  presets 分片加载器（拼接 3 片并全局执行，见下）
 │   └── app.js                  Univer 初始化、自动计算、导入/导出/复制逻辑
 └── vendor/                     全部第三方依赖（已下载到本地）
     ├── react.production.min.js
     ├── react-dom.production.min.js
     ├── rxjs.umd.min.js
-    ├── univer-presets.umd.js
+    ├── univer-presets.chunk1.js   ┐ @univerjs/presets UMD 拆成的 3 片
+    ├── univer-presets.chunk2.js   │ （替代原 univer-presets.umd.js，
+    ├── univer-presets.chunk3.js   ┘ 原因与校验见下方说明）
     ├── univer-preset-sheets-core.umd.js
     ├── univer-preset-sheets-core.css
     ├── univer-design-locale-zh-CN.js
@@ -80,7 +83,7 @@
 
 | 依赖 | 版本 | 用途 | 许可证 |
 | --- | --- | --- | --- |
-| `@univerjs/presets`（UMD） | 0.10.1 | Univer 核心包（含 core / design / engine-render / engine-formula 等与 `createUniver`） | Apache-2.0 |
+| `@univerjs/presets`（UMD，拆为 3 片存储，见下方说明） | 0.10.1 | Univer 核心包（含 core / design / engine-render / engine-formula 等与 `createUniver`） | Apache-2.0 |
 | `@univerjs/preset-sheets-core`（UMD） | 0.10.1 | 电子表格预设（表格 UI、粘贴、公式栏等） | Apache-2.0 |
 | `@univerjs/preset-sheets-core` 中文语言包（UMD） | 0.10.1 | 界面中文 | Apache-2.0 |
 | `@univerjs/design` 中文语言包（UMD） | 0.10.1 | 设计组件中文（语言包合并需要） | Apache-2.0 |
@@ -92,6 +95,24 @@
 因此这三者也一并下载到了本地；`@wendellhu/redi` 等其余依赖已包含在 Univer 的
 UMD 包内部，无需另行下载。各依赖的许可证全文以其官方仓库 / npm 包内文本为准，
 内网使用请自行确认符合所在单位的开源合规要求。
+
+### 关于 presets 的拆分（univer-presets.chunk1–3.js）
+
+`@univerjs/presets` 0.10.1 的 UMD 原文件 `univer-presets.umd.js` 约 7.5 MB，
+超过 GitHub 接口单次推送的请求大小上限（实测约 3.5 MB 可推、7.5 MB 单文件
+返回 HTTP 413），无法整文件推送到 GitHub。因此在本包中把它**按字符串拆成
+3 片**存储，每片本身是一个合法的经典脚本，只把自己那段原文字符串 push 进
+`window.__UNIVER_PRESETS_CHUNKS__`；页面加载时由 `js/univer-presets-loader.js`
+在三片之后同步把三段拼接、并以全局作用域执行（等价于直接加载原文件），
+UMD 照常注册 `window.UniverPresets` 等全局，**拆分没有修改原文件的任何内容**：
+
+- 三片拼接结果与原文件的 SHA-256 完全一致：
+  `0c98c819521cbf879b61448602ff3817de01d054adf0a770d0082e4cc4a5cf0a`
+  （原文件 7,516,129 字节；已在拆分时逐字节校验通过）
+- 若日后改用其他分发方式（如直接拷文件、内网文件服务器），也可以用原版
+  单文件替换这 3 片 + 加载器：在 `index.html` 中把 4 行分片/加载器引用换回
+  一行 `<script src="vendor/univer-presets.umd.js"></script>` 即可，其余代码
+  无需改动。
 
 ## 浏览器要求
 
