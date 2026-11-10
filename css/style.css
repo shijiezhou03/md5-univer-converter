@@ -16,7 +16,7 @@ body {
 }
 
 .page-header {
-  padding: 12px 16px 8px;
+  padding: 8px 12px 6px;
   background: #ffffff;
   border-bottom: 1px solid #d8dee4;
 }
@@ -29,7 +29,7 @@ body {
 
 .title-row h1 {
   margin: 0;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
 }
 
@@ -43,10 +43,10 @@ body {
 }
 
 .sub {
-  margin: 6px 0 10px;
+  margin: 4px 0 6px;
   font-size: 13px;
   color: #57606a;
-  line-height: 1.6;
+  line-height: 1.45;
 }
 
 .sub code {
@@ -60,14 +60,14 @@ body {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .toolbar button,
 .toolbar .file-btn {
   font-size: 13px;
   line-height: 1.4;
-  padding: 5px 12px;
+  padding: 4px 10px;
   border: 1px solid #d0d7de;
   border-radius: 6px;
   background: #f6f8fa;
@@ -130,7 +130,7 @@ body {
 }
 
 .status-row {
-  margin-top: 8px;
+  margin-top: 5px;
   font-size: 13px;
   color: #57606a;
   display: flex;
@@ -183,7 +183,7 @@ main {
 }
 
 .page-footer {
-  padding: 6px 16px;
+  padding: 4px 12px;
   font-size: 12px;
   color: #6e7781;
   background: #ffffff;
