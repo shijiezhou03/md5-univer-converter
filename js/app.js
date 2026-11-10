@@ -52,8 +52,9 @@
     try {
       var dr = state.sheet.getDataRange();
       if (!dr) return 0;
-      var last = dr.getRow() + dr.getRowCount() - 1;
-      return Math.max(0, last);
+      // Univer 0.10.1 的 FRange 没有 getRowCount()，用 getLastRow()（或 getRow()+getHeight()-1）。
+      if (typeof dr.getLastRow === 'function') return Math.max(0, dr.getLastRow());
+      return Math.max(0, dr.getRow() + dr.getHeight() - 1);
     } catch (e) {
       return 0;
     }
