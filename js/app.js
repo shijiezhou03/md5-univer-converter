@@ -9,6 +9,8 @@
  *    等「数字样」字符串不会被 Univer 转成数字（其 setValues/编辑器默认会转）；
  *  - 预置 1048576 行（Excel 行数上限）：Univer 的 insertRowsAfter 成本随表变大
  *    线性上升（实测 4.6 万行时插 5000 行要 25 秒），预置满行数后永不加行；
+ *  - 数据量上限：单次粘贴/导入超过 100 万行、或导入文件超过 25 MB 时，
+ *    直接拒绝并在状态栏提示分批次处理，不硬算到页面卡死；
  *  - 工具栏：导入 .xlsx/.csv、批量粘贴、复制全部 MD5、复制 A+B、导出 CSV、
  *    大小写切换、去首尾空格、清空；
  *  - Univer 加载失败时自动切换到备用文本转换区，页面不会白屏。
@@ -47,6 +49,12 @@
   }
 
   function el(id) { return document.getElementById(id); }
+
+  // 数据量上限：单次超过 100 万行直接拒绝并提示分批（浏览器内存与表格
+  // 行数上限 1048576 都兜不住更大的量）；导入文件超过 25 MB 同样先拦下，
+  // 避免解析超大 Excel 时页面卡死/崩溃，用户拆小后再导。
+  var MAX_BATCH_ROWS = 1000000;
+  var MAX_FILE_BYTES = 25 * 1024 * 1024;
 
   function setStatus(msg) {
     var s = el('status');
@@ -235,6 +243,14 @@
   // 写完逐块回读校验，状态栏报的是实际写入行数，写失败会明确报错而不是假装成功。
   async function doFill(lines, start) {
     if (!state.ready) { setStatus('表格尚未就绪，无法填入。'); return 0; }
+    if (lines.length > MAX_BATCH_ROWS) {
+      setStatus('数据量太大：本次 ' + lines.length + ' 行，超过 100 万行上限，无法一次加密，请分批次处理（每批不超过 100 万行）。');
+      return 0;
+    }
+    if (start + lines.length - 1 > 1048575) {
+      setStatus('数据量太大：加上已有数据将超过表格 1048576 行上限，无法一次加密，请清空表格或分批次处理。');
+      return 0;
+    }
     if (state.busySeq !== 0) { setStatus('正在处理上一批数据，请稍候再试。'); return 0; }
     state.busySeq = -1;
     state.recomputeSeq++;
@@ -423,6 +439,10 @@
 
   function importFile(file) {
     if (!file) return;
+    if (file.size > MAX_FILE_BYTES) {
+      setStatus('文件太大：' + file.name + ' 约 ' + (file.size / 1048576).toFixed(1) + ' MB，超过 25 MB 导入上限，无法导入，请拆分成小文件（每批不超过 100 万行）分批导入。');
+      return;
+    }
     var isCsv = /\.csv$/i.test(file.name);
     if (typeof XLSX === 'undefined' && !isCsv) {
       setStatus('SheetJS 未加载，无法解析 Excel 文件；可改用复制粘贴。');
