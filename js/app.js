@@ -11,8 +11,10 @@
  *    线性上升（实测 4.6 万行时插 5000 行要 25 秒），预置满行数后永不加行；
  *  - 数据量上限：单次粘贴/导入超过 100 万行、或导入文件超过 25 MB 时，
  *    直接拒绝并在状态栏提示分批次处理，不硬算到页面卡死；
- *  - 工具栏：导入 .xlsx/.csv、批量粘贴、复制全部 MD5、复制 A+B、导出 CSV、
- *    大小写切换、去首尾空格、清空；
+ *  - 工具栏：导入 .xlsx/.csv、批量粘贴、复制全部MD5字段、复制表格A字段和B字段、
+ *    导出 CSV、大小写切换、去首尾空格、清空；
+ *  - 直接粘贴（Ctrl+V）学 Excel：从当前选区行覆盖写入、超出范围顺延，
+ *    不整表清空；批量粘贴框/文件导入按「填入方式」走，默认追加；
  *  - Univer 加载失败时自动切换到备用文本转换区，页面不会白屏。
  * 全部依赖均为本地相对路径文件，运行时零外网请求。
  */
@@ -621,13 +623,13 @@
     el('btn-copy-md5').addEventListener('click', function () {
       var rows = collectRows().filter(function (r) { return r.b !== ''; });
       copyText(rows.map(function (r) { return r.b; }).join('\n'),
-        '已复制 ' + rows.length + ' 条 MD5。');
+        '已复制全部MD5字段共 ' + rows.length + ' 条。');
     });
 
     el('btn-copy-both').addEventListener('click', function () {
       var rows = collectRows().filter(function (r) { return r.a !== '' || r.b !== ''; });
       copyText(rows.map(function (r) { return r.a + '\t' + r.b; }).join('\n'),
-        '已复制 A+B 共 ' + rows.length + ' 行（制表符分隔，可直接粘回 Excel）。');
+        '已复制表格A字段和B字段共 ' + rows.length + ' 行（制表符分隔，可直接粘回 Excel）。');
     });
 
     el('btn-export').addEventListener('click', exportCsv);
@@ -644,8 +646,10 @@
     // 1) '00123'、'1e5' 等字符串会被它解析成数字，原文丢失；
     // 2) 大批量粘贴时它内部处理极慢。接管后两种问题都不存在。
     // 注意粘贴事件的 target 不一定在表格容器内（焦点元素可能是 body 或
-    // Univer 的隐藏剪贴板元素），不能用 target 位置判断是否表格粘贴：
-    // 焦点在表格/页面上时按当前选区行填入，在工具栏等区域时按替换/追加模式整表填。
+    // Univer 的隐藏剪贴板元素），不能用 target 位置判断是否表格粘贴。
+    // 粘贴一律学 Excel：从当前选区行开始写入，覆盖落点处的原有数据，
+    // 超出已有数据范围的部分顺延写下去；不整表清空、也不看填入方式。
+    // 填入方式（覆盖/追加，默认追加）只作用于批量粘贴框和文件导入。
     document.addEventListener('paste', function (e) {
       if (!state.ready || state.busySeq !== 0) return;
       var t = e.target;
@@ -662,11 +666,6 @@
       if (!lines.length) return;
       e.preventDefault();
       e.stopImmediatePropagation();
-      var inGrid = (t && t.closest && t.closest('#univer-app')) || t === document.body;
-      if (!inGrid) {
-        fillLines(lines, el('opt-mode').value === 'append');
-        return;
-      }
       var startRow = 1;
       try {
         var sel = state.sheet.getSelection();

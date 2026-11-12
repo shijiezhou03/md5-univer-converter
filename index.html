@@ -20,8 +20,8 @@
       <input type="file" id="file-input" accept=".xlsx,.xls,.csv" hidden>
     </label>
     <button type="button" id="btn-batch-toggle">批量粘贴</button>
-    <button type="button" id="btn-copy-md5">复制全部 MD5</button>
-    <button type="button" id="btn-copy-both">复制 A+B</button>
+    <button type="button" id="btn-copy-md5">复制全部MD5字段</button>
+    <button type="button" id="btn-copy-both">复制表格A字段和B字段</button>
     <button type="button" id="btn-export">导出 CSV</button>
     <button type="button" id="btn-clear">清空</button>
     <span class="sep"></span>
@@ -41,8 +41,8 @@
     </label>
     <label class="opt">填入方式
       <select id="opt-mode">
-        <option value="replace" selected>覆盖</option>
-        <option value="append">追加</option>
+        <option value="replace">覆盖</option>
+        <option value="append" selected>追加</option>
       </select>
     </label>
     <label class="opt"><input type="checkbox" id="opt-skip-header"> 跳过表头行</label>
